@@ -126,17 +126,21 @@ const Home = () => {
   // Lógica para limpiar todas las tareas (DELETE para el usuario)
   const deleteAllTasks = async () => {
     try {
-      // Elimina *todas* las tareas del usuario borrando el usuario en sí
-      const response = await fetch(`${API_URL}/users/${USERNAME}`, {
+      // Elimina todas las tareas y el usuario
+      const deleteResponse = await fetch(`${API_URL}/users/${USERNAME}`, {
         method: "DELETE"
-      });
-      
-      if (!response.ok) {
-        throw new Error(`Error al limpiar tareas: ${response.status}`);
+  });
+
+  if (!deleteResponse.ok && deleteResponse.status !== 404) {
+        throw new Error(`Error al limpiar tareas: ${deleteResponse.status}`);
       }
-      
-      console.log("Todas las tareas eliminadas del servidor.");
-      // Después de eliminar, recarga (lo que forzará la creación de un usuario nuevo y lista vacía)
+
+      console.log("Todas las tareas eliminadas (usuario borrado).");
+        
+      // Vuelve a crear el usuario.
+      await createUser(); 
+
+      // Pregunta por las tareas
       await fetchTodos();
       
     } catch (error) {
