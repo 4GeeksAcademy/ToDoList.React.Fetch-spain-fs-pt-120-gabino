@@ -3,18 +3,15 @@ import React, { useState, useEffect } from "react";
 import ToDoInput from './ToDoInput';
 import ToDoItem from './ToDoItem';
 import ToDoFooter from './ToDoFooter';
-// import '../App.css'; 
 
 const API_URL = "https://playground.4geeks.com/todo";
-const USERNAME = "gahervi"; // Reemplaza con tu nombre de usuario para el endpoint
+const USERNAME = "gahervi";
 
 const Home = () => {
-  // El estado ahora guarda objetos de tarea (como exige la API)
-  // Estructura de tarea de la API: { id: number, label: string, is_done: boolean }
   const [todos, setTodos] = useState([]);
   const [inputValue, setInputValue] = useState("");
 
-  // Función para obtener las tareas del servidor
+  // Esta función obtiene las tareas
   const fetchTodos = async () => {
     try {
       const response = await fetch(`${API_URL}/users/${USERNAME}`);
@@ -65,16 +62,15 @@ const Home = () => {
     }
   };
 
-  // **Cargar tareas al iniciar (useEffect)**
+  // Cargar tareas al iniciar (useEffect)
   useEffect(() => {
     fetchTodos();
-  }, []); // Se ejecuta solo una vez al montar el componente
+  }, []);
 
   // Lógica para añadir una tarea (POST)
   const addTask = async (taskTitle) => {
     if (taskTitle.trim() === "") return;
     
-    // El objeto tarea que espera la API
     const newTask = { 
       label: taskTitle.trim(), 
       is_done: false 
@@ -93,7 +89,7 @@ const Home = () => {
         throw new Error(`Error al añadir tarea: ${response.status}`);
       }
       
-      // Una vez añadida, limpiamos el input y actualizamos la lista (GET)
+      // Se limpia el input
       setInputValue("");
       await fetchTodos();
 
@@ -103,7 +99,7 @@ const Home = () => {
   };
 
   // Lógica para eliminar una tarea (DELETE)
-  // Nota: La API requiere el 'id' de la tarea, no el índice del array
+  // En ste ejercicio la API requiere un id y no el índice del array
   const deleteTask = async (taskId) => {
     try {
       const response = await fetch(`${API_URL}/todos/${taskId}`, {
@@ -111,11 +107,10 @@ const Home = () => {
       });
 
       if (!response.ok) {
-        // En este caso, un 404 (tarea no encontrada) también puede considerarse "éxito" si ya no está
         throw new Error(`Error al eliminar tarea: ${response.status}`);
       }
       
-      // Una vez eliminada, actualizamos la lista (GET)
+      // Al elilminar se actualiza la lista (GET)
       await fetchTodos();
 
     } catch (error) {
@@ -123,7 +118,6 @@ const Home = () => {
     }
   };
   
-  // Lógica para limpiar todas las tareas (DELETE para el usuario)
   const deleteAllTasks = async () => {
     try {
       // Elimina todas las tareas y el usuario
@@ -152,22 +146,22 @@ const Home = () => {
     <div className="container d-flex justify-content-center align-items-center vh-100">
       <div className="w-100" style={{ maxWidth: "550px" }}>
         
-        {/* Título Estilizado */}
+        {/* Título */}
         <div className="text-center">
-            <h1 className="main-title">todos</h1>
+            <h1 className="main-title">ToDos</h1>
         </div>
 
         {/* Contenedor principal de la lista (Card de Bootstrap) */}
         <div className="card shadow-lg rounded-0">
             
-            {/* 1. Componente de Input */}
+            {/* Componente de Input */}
             <ToDoInput 
                 inputValue={inputValue}
                 setInputValue={setInputValue}
                 onAddTask={addTask}
             />
 
-            {/* 2. Lista de Tareas */}
+            {/* Listando las tareas */}
             <ul className="list-group list-group-flush rounded-0">
                 
                 {todos.length === 0 ? (
@@ -177,16 +171,16 @@ const Home = () => {
                     // Si hay tareas, renderizamos cada ToDoItem
                     todos.map((task) => (
                         <ToDoItem
-                            key={task.id} // Usamos el ID de la API como key
-                            task={task.label} // Pasamos solo el label
-                            taskId={task.id} // Pasamos el ID para eliminar
+                            key={task.id} // Se usa el id de la API como llave principal
+                            task={task.label} // solo el label
+                            taskId={task.id} // ID para eliminar
                             onDelete={deleteTask}
                         />
                     ))
                 )}
             </ul>
             
-            {/* 3. Componente de Contador y Botón de Limpieza (solo si hay tareas) */}
+            {/* Contador  si hay alguna tarea, se muestra el botón de eliminar todas */}
             {todos.length > 0 && (
                 <>
                     {/* Contador */}
